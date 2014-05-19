@@ -25,7 +25,7 @@ def execute(args):
 
 def log_to_dict(log):
     mylist = []
-    uuid = ''
+    print(log.split('\n'))
     for line in log.split('\n'):
         if len(line) > 0:
             if line.startswith('commit'):
