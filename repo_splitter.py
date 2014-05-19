@@ -1,7 +1,5 @@
 import os
 import sys
-import shutil
-from pprint import pprint
 
 
 def calculate_maps():
