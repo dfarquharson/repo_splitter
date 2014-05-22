@@ -108,17 +108,18 @@ def create_repos(data):
         cwd = os.getcwd()
         os.chdir(repo)
         os.system('git init')
-        for xtl in d['xtls']:
+        xtls = [xtl.split('/Users/djfarquharson/test/git_svn/trunk/')[1]
+                for xtl in d['xtls'] if os.path.exists(xtl)]
+        os.chdir('/Users/djfarquharson/test/git_svn/trunk/')
+        # exports git log of a file as a 'patch' which we apply to the new repo
+        os.system('git log --pretty=email --patch-with-stat --reverse ' +
+                  '-- '+' '.join(xtls)+' | (cd '+repo+' && git am)')
+        os.chdir(repo)
+        for xtl in xtls:
             if os.path.exists(xtl):
-                os.chdir('/'.join(xtl.split('/')[:-1]))
-                # exports git log of a file as a 'patch' which we apply to the new repo
-                os.system('git log --pretty=email --patch-with-stat --reverse ' +
-                          '-- '+xtl.split('/')[-1]+' | (cd '+repo+' && git am)')
-                os.chdir(repo)
                 # rewrites history with file at the top level instead of deeply nested
-                inner_xtl = '/'.join(xtl.split('/')[6:])
-                os.system('git filter-branch -f --tree-filter \'if [ -f '+ inner_xtl +
-                          ' ]; then mv '+inner_xtl+' .; fi\' HEAD')
+                os.system('git filter-branch -f --tree-filter \'if [ -f '+ xtl +
+                          ' ]; then mv '+xtl+' .; fi\' HEAD')
         os.chdir(cwd)
 
 

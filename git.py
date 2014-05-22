@@ -25,7 +25,6 @@ def execute(args):
 
 def log_to_dict(log):
     mylist = []
-    print(log.split('\n'))
     for line in log.split('\n'):
         if len(line) > 0:
             if line.startswith('commit'):
@@ -39,7 +38,10 @@ def log_to_dict(log):
                     curdict[content[0].replace(':', '')] = \
                         ' '.join(content[1:])
                 else:
-                    curdict['message'] = ' '.join(content)
+                    if 'message' in curdict.keys():
+                        curdict['message'] += '\n'+' '.join(content)
+                    else:
+                        curdict['message'] = ' '.join(content)
     return mylist
 
 
