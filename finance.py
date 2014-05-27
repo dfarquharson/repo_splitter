@@ -83,5 +83,5 @@ def write_to_csv(entries):
 
 
 if __name__ == '__main__':
-    print(get_repos('/Users/djfarquharson/test/unique_repos/')
+    print(write_to_csv(get_report('/Users/djfarquharson/test/unique_repos/'))
           if len(argv) == 1 else 'usage: python finance.py')
