@@ -3,10 +3,10 @@ import sys
 import os
 
 
-ILLEGAL_ARGS = {'--delete', '-d', '|'}
+ILLEGAL_ARGS = {'|'}
 ALLOWED_CMDS = {'add', 'status', 'log', 'init', 'branch',
-                    'commit', 'diff', 'merge', 'checkout',
-                    'ls-files'}
+                'commit', 'diff', 'merge', 'checkout',
+                'ls-files', 'reset', 'show', 'rev-list'}
 
 
 def execute(args):
