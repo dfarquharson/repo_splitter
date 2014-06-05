@@ -72,6 +72,7 @@ def set_murica_dates(entries):
 
 
 def write_to_csv(entries):
+    set_murica_dates(entries)
     csv = 'xnet,last_revision,previous_revision,days_between_revisions\n'
     for entry in entries:
         csv += entry['xnet'] + ',' + \
