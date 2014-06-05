@@ -4,6 +4,9 @@ import os
 def append_config(d):
     conf = d+'/.git/config'
     if os.path.exists(conf):
+        with open(conf, 'r') as f:
+            if 'denyCurrentBranch = warn' in f.read():
+                return
         with open(conf, 'a') as f:
             f.write('[receive]\n\tdenyCurrentBranch = warn')
 
@@ -19,8 +22,9 @@ def add_post_receive(d):
 def main():
     for d in os.listdir('.'):
         print(os.getcwd()+'/'+d)
-        append_config(d)
-        add_post_receive(d)
+        if os.path.isdir(d+'/.git'):
+            append_config(d)
+            add_post_receive(d)
 
 
 if __name__ == '__main__':
