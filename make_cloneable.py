@@ -8,7 +8,7 @@ def append_config(d):
             if 'denyCurrentBranch = warn' in f.read():
                 return
         with open(conf, 'a') as f:
-            f.write('[receive]\n\tdenyCurrentBranch = warn')
+            f.write('[receive]\n\tdenyCurrentBranch = warn\n\tdenyDeleteCurrent = warn')
 
 
 def add_post_receive(d):
