@@ -27,6 +27,49 @@ def fmt_dir(path):
     return path if path.endswith('/') else path+'/'
 
 
+def list_web_files(files):
+    return [f for f in files if '/web/' in f]
+
+
+def list_fi_files(files):
+    return [f for f in files if not '/web/' in f]
+
+
+def list_web_files_nested(files):
+    return [f for f in files if len(f.split('/')) > f.split('/').index('web')+2]
+
+
+def list_web_files_flat(files):
+    return [f for f in files if len(f.split('/')) <= f.split('/').index('web')+2]
+
+
+def get_web_repos_nested(files):
+    return [{'xtls': [f], 'repo_name': f.split('/')[-2]+'.web'} for f in files]
+
+
+def get_web_repos_flat(files):
+    return [{'xtls': [f], 'repo_name': f.split('/')[-3]+'.web'} for f in files]
+
+
+def merge_web_repos(repos):
+    merged = []
+    for r in repos:
+        if len(merged) > 0:
+            r_merged = False
+            for m in merged:
+                if r_merged == True:
+                    break
+                elif r['repo_name'] == m['repo_name']:
+                    m = merge(m, r)
+                    r_merged = True
+            if r_merged == False:
+                merged.append(r)
+        else:
+            merged.append(r)
+    return merged
+
+
+
 def get_maps(files):
     return [get_metadata(x) for x in files if is_output(x)]
 
@@ -100,17 +143,21 @@ def get_sibling_repo(xtl, repos):
 
 
 def create_repos(data):
+    existing_repo = '/home/ubuntu/maps/'
+    repo_prefix = '/home/ubuntu/test_repos/'
     for d in data:
-        repo = '/Users/djfarquharson/test/unique_repos/'+d['repo_name']
+        repo = repo_prefix+d['repo_name']
         print 'setting up repo: '+repo
         if not os.path.isdir(repo):
             os.mkdir(repo)
         cwd = os.getcwd()
         os.chdir(repo)
         os.system('git init')
-        xtls = [xtl.split('/Users/djfarquharson/test/git_svn/trunk/')[1]
+        #xtls = [xtl.split('/Users/djfarquharson/test/git_svn/trunk/')[1]
+        xtls = [xtl.split(existing_repo)[1]
                 for xtl in d['xtls'] if os.path.exists(xtl)]
-        os.chdir('/Users/djfarquharson/test/git_svn/trunk/')
+        #os.chdir('/Users/djfarquharson/test/git_svn/trunk/')
+        os.chdir(existing_repo)
         # exports git log of a file as a 'patch' which we apply to the new repo
         os.system('git log --pretty=email --patch-with-stat --reverse ' +
                   '-- '+' '.join(xtls)+' | (cd '+repo+' && git am)')
@@ -125,8 +172,16 @@ def create_repos(data):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        maps = get_maps(list_files(sys.argv[1]))
-        #merged = merge_shared_repos(maps)
-        #create_repos(merged)
+        all_files = list_files(sys.argv[2])
+        fi_maps = get_maps(list_fi_files(all_files))
+        fi_repos = merge_shared_repos(fi_maps)
+        web_files = list_web_files(all_files)
+        web_repos = merge_web_repos(
+            get_web_repos_nested(
+                list_web_files_nested(web_files)) +
+            get_web_repos_flat(
+                list_web_files_flat(web_files)))
+        all_repos = fi_repos + web_repos
+        #create_repos(all_repos)
     else:
         print('usage: python repo_splitter dir')
