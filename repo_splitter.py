@@ -57,11 +57,10 @@ def merge_web_repos(repos):
         if len(merged) > 0:
             r_merged = False
             for m in merged:
-                if r_merged == True:
-                    break
-                elif r['repo_name'] == m['repo_name']:
+                if r['repo_name'] == m['repo_name']:
                     m = merge(m, r)
                     r_merged = True
+                    break
             if r_merged == False:
                 merged.append(r)
         else:
