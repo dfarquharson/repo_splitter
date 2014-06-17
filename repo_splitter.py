@@ -141,9 +141,8 @@ def get_sibling_repo(xtl, repos):
             return repo
 
 
-def create_repos(data):
-    existing_repo = '/home/ubuntu/maps/'
-    repo_prefix = '/home/ubuntu/test_repos/'
+def create_repos(data, existing_repo='/home/ubuntu/maps/',
+                 repo_prefix='/home/ubuntu/test_repos/'):
     for d in data:
         repo = repo_prefix+d['repo_name']
         print 'setting up repo: '+repo
@@ -152,10 +151,8 @@ def create_repos(data):
         cwd = os.getcwd()
         os.chdir(repo)
         os.system('git init')
-        #xtls = [xtl.split('/Users/djfarquharson/test/git_svn/trunk/')[1]
         xtls = [xtl.split(existing_repo)[1]
                 for xtl in d['xtls'] if os.path.exists(xtl)]
-        #os.chdir('/Users/djfarquharson/test/git_svn/trunk/')
         os.chdir(existing_repo)
         # exports git log of a file as a 'patch' which we apply to the new repo
         os.system('git log --pretty=email --patch-with-stat --reverse ' +
