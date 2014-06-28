@@ -1,5 +1,6 @@
 import os
 import sys
+import itertools
 
 
 def calculate_maps():
@@ -11,7 +12,7 @@ def explicit_dependencies(files):
 
 
 def gather_dependencies(f):
-    print 'parsing file: '+f
+    #print 'parsing file: '+f
     return {'file': f,
             'deps': get_source_files(f).split(',') if is_output(f) else [],
             'repo_name': get_repo_name(f)}
@@ -74,7 +75,7 @@ def get_maps(files):
 
 
 def get_metadata(x):
-    print 'parsing file: ' + x
+    #print 'parsing file: ' + x
     sources = get_source_files(x)
     readme = get_readme(x)
     repo_name = get_repo_name(x)
@@ -88,7 +89,6 @@ def get_source_files(x):
 
 def get_readme(x):
     path = '/'.join(x.split('/')[:-1])
-    print 'path:', path
     return [os.path.join(path, x)
             for x in os.listdir(path)
             if '.txt' in x.lower() and 'readme' in x.lower()]
@@ -132,7 +132,7 @@ def merge_shared_repos(repos):
         for xtl in repo['xtls']:
             if get_sibling_repo(xtl, repos) is not None:
                 result = merge(get_sibling_repo(xtl, repos), repo)
-                print result
+                #print result
                 repos_trimmed.append(result)
                 merged = True
                 break
@@ -150,8 +150,8 @@ def get_sibling_repo(xtl, repos):
             return repo
 
 
-def create_repos(data, existing_repo='/home/ubuntu/maps/',
-                 repo_prefix='/home/ubuntu/test_repos/'):
+def create_repos(data, existing_repo='/home/ubuntu/trunk/',
+                 repo_prefix='/home/ubuntu/new_repos/'):
     for d in data:
         repo = repo_prefix+d['repo_name']
         print 'setting up repo: '+repo
@@ -173,6 +173,38 @@ def create_repos(data, existing_repo='/home/ubuntu/maps/',
                 os.system('git filter-branch -f --tree-filter \'if [ -f '+ xtl +
                           ' ]; then mv '+xtl+' .; fi\' HEAD')
         os.chdir(cwd)
+
+
+def grab_fi_repos(location='/home/ubuntu/trunk/maps/'):
+    all_files = list_files(location)
+    fi_maps = get_maps(list_fi_files(all_files))
+    fi_repos = merge_shared_repos(fi_maps)
+    return fi_repos
+
+
+def grab_web_repos(location='/home/ubuntu/trunk/maps/'):
+    all_files = list_files(location)
+    web_files = list_web_files(all_files)
+    web_repos = merge_web_repos(
+        get_web_repos_nested(
+            list_web_files_nested(web_files)) +
+        get_web_repos_flat(
+            list_web_files_flat(web_files)))
+    return web_repos
+
+
+def parallelize(repos, n):
+    return list(itertools.izip_longest(*[iter(repos)]*n))
+
+
+def grab_fi_chunk(n):
+    fi_repos = grab_fi_repos()
+    return parallelize(fi_repos, 802)[n]
+
+
+def grab_web_chunk(n):
+    web_repos = grab_web_repos()
+    return [x for x in parallelize(web_repos, 226)[n] if x is not None]
 
 
 if __name__ == '__main__':

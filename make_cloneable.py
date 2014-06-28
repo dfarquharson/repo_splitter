@@ -17,12 +17,20 @@ def add_post_receive(d):
     os.chmod(pr, 0775)
 
 
-def main():
-    for d in os.listdir('.'):
-        print(os.getcwd()+'/'+d)
-        if os.path.isdir(d+'/.git'):
-            append_config(d)
-            add_post_receive(d)
+def make_cloneable(repos):
+    for repo in repos:
+        print(repo)
+        if os.path.isdir(repo+'/.git/'):
+            append_config(repo)
+            add_post_receive(repo)
+
+
+#def main():
+    #for d in os.listdir('.'):
+        #print(os.getcwd()+'/'+d)
+        #if os.path.isdir(d+'/.git'):
+            #append_config(d)
+            #add_post_receive(d)
 
 
 if __name__ == '__main__':
