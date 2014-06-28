@@ -76,13 +76,22 @@ def get_maps(files):
 def get_metadata(x):
     print 'parsing file: ' + x
     sources = get_source_files(x)
+    readme = get_readme(x)
     repo_name = get_repo_name(x)
-    return {'xtls': sources.split(',') + [x],
+    return {'xtls': sources.split(',') + readme + [x],
             'repo_name': repo_name}
 
 
 def get_source_files(x):
     return '/'.join(x.split('/')[:-1]+[get_attr(x, 'sourceFiles')])
+
+
+def get_readme(x):
+    path = '/'.join(x.split('/')[:-1])
+    print 'path:', path
+    return [os.path.join(path, x)
+            for x in os.listdir(path)
+            if '.txt' in x.lower() and 'readme' in x.lower()]
 
 
 def get_repo_name(x):

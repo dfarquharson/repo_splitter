@@ -5,7 +5,8 @@ def append_config(d):
     conf = d+'/.git/config'
     if os.path.exists(conf):
         with open(conf, 'a') as f:
-            f.write('[receive]\n\tdenyCurrentBranch = warn\n\tdenyDeleteCurrent = warn')
+            f.write('[receive]\n\tdenyCurrentBranch = warn' +
+                    '\n\tdenyDeleteCurrent = warn')
 
 
 def add_post_receive(d):
