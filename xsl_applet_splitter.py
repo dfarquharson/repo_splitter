@@ -20,6 +20,7 @@ def get_files_with_extensions(cwd, exts=['.xsl', '.jpg', '.gif', '.png']):
 
 
 def delete_non_matching(cwd, exts=['.xsl', '.jpg', '.gif', '.png']):
+    ''' actually does the magic for the xsl repo creation'''
     for (parent, dirs, files) in os.walk(cwd):
         for f in files:
             if '.git' not in parent and '.git' not in f and \

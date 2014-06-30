@@ -5,8 +5,9 @@ import os
 
 ILLEGAL_ARGS = {'|'}
 ALLOWED_CMDS = {'add', 'status', 'log', 'init', 'branch',
-                'commit', 'diff', 'merge', 'checkout',
-                'ls-files', 'reset', 'show', 'rev-list'}
+                'commit', 'diff', 'merge', 'checkout', 'rm',
+                'ls-files', 'reset', 'show', 'rev-list',
+                'config'}
 
 
 def execute(args):
@@ -34,7 +35,8 @@ def log_to_dict(log):
                 mylist.append(curdict)
             else:
                 content = line.split()
-                if len(content) > 0 and ':' in content[0]:
+                if len(content) > 0 and content[0] == 'Author:' or \
+                   content[0] == 'Date:':
                     curdict[content[0].replace(':', '')] = \
                         ' '.join(content[1:])
                 else:

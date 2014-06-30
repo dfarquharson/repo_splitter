@@ -27,7 +27,8 @@ def get_specific_date(entry, key):
 
 
 def get_time(entry, key):
-    return strptime(get_specific_date(entry, key),
+    date = get_specific_date(entry, key)
+    return strptime(date[:-6] if '-' in date else date,
                     '%a %b %d %H:%M:%S %Y')
 
 
@@ -44,7 +45,9 @@ def calc_days(entry):
 def get_report(directory):
     entries = []
     for d in os.listdir(directory):
-        log = get_log(directory+'/'+d)
+        repodir = (directory if directory.endswith('/') else directory+'/')+d
+        print repodir
+        log = get_log(repodir)
         rev_generator = get_next_revision(log)
         last_rev = rev_generator.next()
         try:
@@ -84,5 +87,5 @@ def write_to_csv(entries):
 
 
 if __name__ == '__main__':
-    print(write_to_csv(get_report('/Users/djfarquharson/test/unique_repos/'))
-          if len(argv) == 1 else 'usage: python finance.py')
+    print(write_to_csv(get_report(argv[1]))
+          if len(argv) >= 2 else 'usage: python finance.py /dir/to/report/on/')
