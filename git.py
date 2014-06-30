@@ -35,8 +35,8 @@ def log_to_dict(log):
                 mylist.append(curdict)
             else:
                 content = line.split()
-                if len(content) > 0 and content[0] == 'Author:' or \
-                   content[0] == 'Date:':
+                if len(content) > 0 and (content[0] == 'Author:' or \
+                   content[0] == 'Date:'):
                     curdict[content[0].replace(':', '')] = \
                         ' '.join(content[1:])
                 else:

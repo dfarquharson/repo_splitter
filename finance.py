@@ -23,7 +23,8 @@ def get_next_revision(log):
 
 
 def get_specific_date(entry, key):
-    return entry[key]['Date'].split('+')[0].strip()
+    return entry[key]['Date'].split('+')[0].strip() \
+        if 'Date' in entry[key] else ''
 
 
 def get_time(entry, key):
@@ -33,7 +34,7 @@ def get_time(entry, key):
 
 
 def calc_days(entry):
-    if entry['previous_revision'] != '':
+    if entry['previous_revision'] and entry['last_revision']:
         t1 = get_time(entry, 'last_revision')
         t2 = get_time(entry, 'previous_revision')
         return str((datetime.datetime(*t1[:6]) -
@@ -48,7 +49,10 @@ def get_report(directory):
         repodir = (directory if directory.endswith('/') else directory+'/')+d
         log = get_log(repodir)
         rev_generator = get_next_revision(log)
-        last_rev = rev_generator.next()
+        try:
+            last_rev = rev_generator.next()
+        except StopIteration:
+            last_rev = ''
         try:
             prev_rev = rev_generator.next()
         except StopIteration:
@@ -68,7 +72,8 @@ def get_murica_time(entry, key):
 
 def set_murica_dates(entries):
     for e in entries:
-        e['last_revision']['Date'] = get_murica_time(e, 'last_revision')
+        if e['last_revision'] != '':
+            e['last_revision']['Date'] = get_murica_time(e, 'last_revision')
         if e['previous_revision'] != '':
             e['previous_revision']['Date'] = get_murica_time(e, 'previous_revision')
 
@@ -78,7 +83,8 @@ def write_to_csv(entries):
     csv = 'xnet,last_revision,previous_revision,days_between_revisions\n'
     for entry in entries:
         csv += entry['xnet'] + ',' + \
-               entry['last_revision']['Date'] + ',' + \
+               (entry['last_revision']['Date'] \
+               if entry['last_revision'] != '' else '') + ',' + \
                (entry['previous_revision']['Date'] \
                if entry['previous_revision'] != '' else '') + ',' + \
                entry['days_between_revisions'] + '\n'
