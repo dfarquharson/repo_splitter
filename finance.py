@@ -46,7 +46,6 @@ def get_report(directory):
     entries = []
     for d in os.listdir(directory):
         repodir = (directory if directory.endswith('/') else directory+'/')+d
-        print repodir
         log = get_log(repodir)
         rev_generator = get_next_revision(log)
         last_rev = rev_generator.next()
