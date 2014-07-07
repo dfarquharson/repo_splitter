@@ -1,11 +1,29 @@
 import os
 
 
+def update_config(d):
+    conf = d+'/.git/config'
+    if os.path.exists(conf):
+        sharedRepo = '\tsharedRepository = 0664\n'
+        with open(conf, 'r') as f:
+            data = f.readlines()
+        if sharedRepo in data:
+            return
+        else:
+            if '[receive]\n' in data:
+                data.insert(data.index('[receive]\n'), sharedRepo)
+            else:
+                data.append(sharedRepo)
+            with open(conf, 'w') as f:
+                f.write(''.join(data))
+
+
 def append_config(d):
     conf = d+'/.git/config'
     if os.path.exists(conf):
         with open(conf, 'a') as f:
-            f.write('[receive]\n\tdenyCurrentBranch = warn' +
+            f.write('\tsharedRepository = 0664' +
+                    '\n[receive]\n\tdenyCurrentBranch = warn' +
                     '\n\tdenyDeleteCurrent = warn')
 
 
