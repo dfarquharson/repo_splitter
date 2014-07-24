@@ -31,14 +31,7 @@ def add_post_receive(d):
     pr = d+'/.git/hooks/post-receive'
     with open(pr, 'w') as f:
         f.write('#!/bin/sh\n' +
-                'git --git-dir=. --work-tree=$PWD/.. reset --hard\n' +
-                'DIR=$PWD\n' +
-                'cd ..\n' +
-                'REPO=`basename $PWD`\n' +
-                'URL=https://localhost/xd/sync/$REPO\n' +
-                'echo $URL\n' +
-                'curl -X POST $URL  --insecure\n' +
-                'cd $DIR\n')
+                'git --git-dir=. --work-tree=$PWD/.. reset --hard\n')
     os.chmod(pr, 0775)
 
 
